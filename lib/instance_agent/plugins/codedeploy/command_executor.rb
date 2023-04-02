@@ -536,12 +536,7 @@ module InstanceAgent
           full_path_deployment_archives = deployment_archives.map{ |f| File.join(ProcessManager::Config.config[:root_dir], deployment_group, f)}
           full_path_deployment_archives.delete(deployment_root_dir(deployment_spec))
 
-          extra = full_path_deployment_archives.size - @archives_to_retain + 1
-          return unless extra > 0
-
-          # Never remove the last successful deployment
-          last_success = last_successful_deployment_dir(deployment_group)
-          full_path_deployment_archives.delete(last_success)
+          extra = [full_path_deployment_archives.size - @archives_to_retain + 1, 0].max
 
           # Sort oldest -> newest, take first `extra` elements
           oldest_extra = full_path_deployment_archives.sort_by{ |f| File.mtime(f) }.take(extra)
